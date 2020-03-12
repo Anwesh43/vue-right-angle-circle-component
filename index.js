@@ -44,12 +44,14 @@ Vue.component('right-angle-circle-component', {
         const sf = 0
         return {animator, state, sf}
     },
+    template : '<div @click = "start"><div :style="ballStyleX"></div><div :style="lineStyleX"></div><div :style="ballStyleY"></div><div :style="lineStyleY"></div></div>',
     methods : {
         start() {
             this.animator.start(() => {
                 this.sf = Math.sin(this.state.scale * Math.PI)
                 this.state.update(() => {
                     this.animator.stop()
+                    this.sf = 0
                 })
             })
         },
@@ -58,8 +60,8 @@ Vue.component('right-angle-circle-component', {
             const position = 'absolute'
             const fx = w / 10
             const fy = 0.9 * h
-            const x = fx + lSize * sf * i
-            const y = fy - lSize * sf * (1 - i)
+            const x = fx + lSize * divideScale(sf, i, 2) * i
+            const y = fy - lSize * divideScale(sf, i , 2) * (1 - i)
             const background = '#3F51B5'
             const circleSize = Math.min(w, h) / 10
             const strokeWidth = Math.min(w, h) / 70
@@ -69,8 +71,8 @@ Vue.component('right-angle-circle-component', {
     computed: {
         ballStyleY() {
             const {background, x, y, position, circleSize} = this.getCommonStyle(0, this.sf)
-            const left = `${x}px`
-            const top = `${y}px`
+            const left = `${x - circleSize / 2}px`
+            const top = `${y - circleSize / 2}px`
             const borderRadius = '50%'
             const width = `${circleSize}px`
             const height = `${circleSize}px`
@@ -79,15 +81,15 @@ Vue.component('right-angle-circle-component', {
         lineStyleY() {
             const {background, x, y, position, strokeWidth, fx, fy} = this.getCommonStyle(0, this.sf)
             const width = `${strokeWidth}px`
-            const height = `${y}px`
+            const height = `${Math.abs(y - fy)}px`
             const left = `${fx}px`
-            const top = `${fy}px`
+            const top = `${y}px`
             return {background, position, left, top, width, height}
         },
         ballStyleX() {
             const {background, x, y, position, circleSize} = this.getCommonStyle(1, this.sf)
-            const left = `${x}px`
-            const top = `${y}px`
+            const left = `${x - circleSize / 2}px`
+            const top = `${y - circleSize / 2}px`
             const width = `${circleSize}px`
             const height = `${circleSize}px`
             const borderRadius = '50%'
@@ -97,7 +99,7 @@ Vue.component('right-angle-circle-component', {
             const {background, x, y, position, strokeWidth, fx, fy} = this.getCommonStyle(1, this.sf)
             const left = `${fx}px`
             const top = `${fy}px`
-            const width = `${x}px`
+            const width = `${x - fx}px`
             const height = `${strokeWidth}px`
             return {background, left, top, position, width, height}
 
